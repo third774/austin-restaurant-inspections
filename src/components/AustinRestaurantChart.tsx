@@ -104,8 +104,9 @@ export class AustinRestaurantInspectionsChart extends Component<
       d3.max(data, (d) => d.InspectionDate) as Date,
     ])
 
-    console.log(this.xAxis)
-    this.xAxis.transition(this.transition).call(d3.axisBottom(this.xScale))
+    this.xAxis
+      .transition(this.transition)
+      .call(d3.axisBottom(this.xScale).tickFormat(d3.timeFormat('%m/%y')))
 
     update.exit().remove()
 
@@ -125,8 +126,6 @@ export class AustinRestaurantInspectionsChart extends Component<
       )
       .attr('stroke-width', 2)
       .attr('fill', 'none')
-
-    console.log(data)
   }
 
   render() {

@@ -55,7 +55,6 @@ class App extends React.Component<{}, AppState> {
             return acc
           }, {})
         console.timeEnd()
-        console.log(fixedData)
         this.setState({
           data: fixedData,
         })
