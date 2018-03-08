@@ -3,6 +3,8 @@ import Downshift from 'downshift'
 import styled from 'styled-components'
 import debounce from 'lodash.debounce'
 
+import api from 'api'
+
 const SearchInput = styled.input`
   font-size: 20px;
   height: 26px;
@@ -11,7 +13,6 @@ const SearchInput = styled.input`
 `
 
 function BasicAutocomplete({items, onChange}: any) {
-  console.log(items)
   const keys = Object.keys(items)
   return (
     <Downshift
@@ -27,6 +28,11 @@ function BasicAutocomplete({items, onChange}: any) {
         <div>
           <SearchInput
             {...getInputProps({
+              onChange: (e) => {
+                const search = e.currentTarget.value
+                search.length > 2 && api.search(search).then(console.log)
+              },
+              // console.log(e.currentTarget.value),
               placeholder: 'What restaurant do you want to be disappointed in?',
             })}
           />
@@ -48,7 +54,7 @@ function BasicAutocomplete({items, onChange}: any) {
                       fontWeight: selectedItem === item ? 'bold' : 'normal',
                     }}
                   >
-                    {console.log(item) || item}
+                    {item}
                   </div>
                 ))}
             </div>
