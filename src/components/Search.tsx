@@ -7,9 +7,21 @@ import api from 'api'
 
 const SearchInput = styled.input`
   font-size: 20px;
-  height: 26px;
   width: 100%;
   max-width: 600px;
+  border: none;
+  border-bottom: 2px solid slategray;
+  background-color: inherit;
+  color: inherit;
+  font-family: 'Lato', sans-serif;
+  &:focus {
+    outline: none;
+  }
+`
+
+const DownshiftContainer = styled.div`
+  max-width: 600px;
+  margin: 0 auto;
 `
 
 interface SearchProps {
@@ -53,12 +65,13 @@ class Search extends React.Component<SearchProps, SearchState> {
         render={({
           getInputProps,
           getItemProps,
+          getRootProps,
           isOpen,
           inputValue,
           selectedItem,
           highlightedIndex,
         }) => (
-          <div>
+          <DownshiftContainer {...getRootProps({refKey: 'innerRef'})}>
             <SearchInput
               {...getInputProps({
                 onChange: (e) => this.debouncedFetch(e.currentTarget.value),
@@ -83,7 +96,7 @@ class Search extends React.Component<SearchProps, SearchState> {
                   ))}
                 </div>
               )}
-          </div>
+          </DownshiftContainer>
         )}
       />
     )

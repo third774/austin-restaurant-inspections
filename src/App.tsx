@@ -38,6 +38,7 @@ class App extends React.Component<{}, AppState> {
     const {data, dataPending} = this.state
     return (
       <div className="App">
+        <h1>Austin Restaurant Inspection Scores</h1>
         <Search onChange={this.handleSelection} />
         {dataPending ? (
           <Loader />
