@@ -12,57 +12,82 @@ const SearchInput = styled.input`
   max-width: 600px;
 `
 
-function BasicAutocomplete({items, onChange}: any) {
-  const keys = Object.keys(items)
-  return (
-    <Downshift
-      onChange={debounce(onChange, 500)}
-      render={({
-        getInputProps,
-        getItemProps,
-        isOpen,
-        inputValue,
-        selectedItem,
-        highlightedIndex,
-      }) => (
-        <div>
-          <SearchInput
-            {...getInputProps({
-              onChange: (e) => {
-                const search = e.currentTarget.value
-                search.length > 2 && api.search(search).then(console.log)
-              },
-              // console.log(e.currentTarget.value),
-              placeholder: 'What restaurant do you want to be disappointed in?',
-            })}
-          />
-          {isOpen ? (
-            <div style={{border: '1px solid #ccc'}}>
-              {keys
-                .filter(
-                  (i) =>
-                    !inputValue ||
-                    i.toLowerCase().includes(inputValue.toLowerCase()),
-                )
-                .map((item: any, index: any) => (
-                  <div
-                    {...getItemProps({item})}
-                    key={item}
-                    style={{
-                      backgroundColor:
-                        highlightedIndex === index ? 'gray' : 'white',
-                      fontWeight: selectedItem === item ? 'bold' : 'normal',
-                    }}
-                  >
-                    {item}
-                  </div>
-                ))}
-            </div>
-          ) : null}
-        </div>
-      )}
-    />
-  )
+interface SearchProps {
+  onChange: any
 }
 
-export default BasicAutocomplete
+interface SearchState {
+  results: SearchResult[]
+}
+
+export interface SearchResult {
+  restaurant_name: string
+  facility_id: string
+  address_address: string
+}
+
+class Search extends React.Component<SearchProps, SearchState> {
+  state: SearchState = {
+    results: [],
+  }
+
+  debouncedFetch = debounce((search: string) => {
+    if (search.length > 0) {
+      api.search(search).then((results) => {
+        this.setState({results})
+      })
+    } else {
+      this.setState({results: []})
+    }
+  }, 250)
+
+  render() {
+    const {onChange} = this.props
+    const {results} = this.state
+    return (
+      <Downshift
+        onChange={debounce(onChange, 500)}
+        itemToString={(item) =>
+          item ? `${item.restaurant_name} @ ${item.address_address}` : ''
+        }
+        render={({
+          getInputProps,
+          getItemProps,
+          isOpen,
+          inputValue,
+          selectedItem,
+          highlightedIndex,
+        }) => (
+          <div>
+            <SearchInput
+              {...getInputProps({
+                onChange: (e) => this.debouncedFetch(e.currentTarget.value),
+                placeholder: 'Search for Austin Restaurants',
+              })}
+            />
+            {isOpen &&
+              results.length > 0 && (
+                <div style={{border: '1px solid #ccc'}}>
+                  {results.map((item: SearchResult, index: number) => (
+                    <div
+                      {...getItemProps({item})}
+                      key={item.facility_id}
+                      style={{
+                        backgroundColor:
+                          highlightedIndex === index ? 'gray' : 'white',
+                        fontWeight: selectedItem === item ? 'bold' : 'normal',
+                      }}
+                    >
+                      {item.restaurant_name} @ {item.address_address}
+                    </div>
+                  ))}
+                </div>
+              )}
+          </div>
+        )}
+      />
+    )
+  }
+}
+
+export default Search

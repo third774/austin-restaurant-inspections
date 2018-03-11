@@ -2,16 +2,7 @@ import React, {Component} from 'react'
 import * as d3 from 'd3'
 
 import responsivefy from 'utils/responsivefy'
-
-export interface AustinRestaurantInspectionsData {
-  RestaurantName: string
-  ZipCode: number
-  InspectionDate: Date
-  Score: number
-  Address: string
-  FacilityID: number
-  ProcessDescription: string
-}
+import {AustinRestaurantInspectionsData} from '../models'
 
 interface AustinRestaurantInspectionsChartProps {
   data: AustinRestaurantInspectionsData[]
@@ -39,16 +30,22 @@ export class AustinRestaurantInspectionsChart extends Component<
 
   componentDidMount() {
     this.init()
-    this.renderChart(this.props.data)
+    this.renderChart(this.formattedData)
   }
 
   componentDidUpdate() {
-    this.renderChart(this.props.data)
+    this.renderChart(this.formattedData)
+  }
+
+  get formattedData() {
+    return this.props.data.map((datum) => ({
+      ...datum,
+      inspection_date: new Date(datum.inspection_date),
+      score: +datum.score,
+    }))
   }
 
   init = () => {
-    const {data} = this.props
-
     this.svg = d3
       .select(this.container)
       .append('svg')
@@ -63,8 +60,8 @@ export class AustinRestaurantInspectionsChart extends Component<
     this.xScale = d3
       .scaleTime()
       .domain([
-        d3.min(data, (d) => d.InspectionDate) as Date,
-        d3.max(data, (d) => d.InspectionDate) as Date,
+        d3.min(this.formattedData, (d) => d.inspection_date) as Date,
+        d3.max(this.formattedData, (d) => d.inspection_date) as Date,
       ])
       .range([0, width])
 
@@ -88,20 +85,20 @@ export class AustinRestaurantInspectionsChart extends Component<
 
     this.line = d3
       .line<AustinRestaurantInspectionsData>()
-      .x((d) => this.xScale(d.InspectionDate))
-      .y((d) => yScale(d.Score))
+      .x((d) => this.xScale(d.inspection_date))
+      .y((d) => yScale(d.score))
   }
 
   renderChart = (data: AustinRestaurantInspectionsData[]) => {
     const sortedData = data.sort(
-      (a, b) => a.InspectionDate.valueOf() - b.InspectionDate.valueOf(),
+      (a, b) => a.inspection_date.valueOf() - b.inspection_date.valueOf(),
     )
 
     const update = this.svg.selectAll('.line').data([sortedData])
 
     this.xScale.domain([
-      d3.min(data, (d) => d.InspectionDate) as Date,
-      d3.max(data, (d) => d.InspectionDate) as Date,
+      d3.min(data, (d) => d.inspection_date) as Date,
+      d3.max(data, (d) => d.inspection_date) as Date,
     ])
 
     this.xAxis
@@ -120,9 +117,9 @@ export class AustinRestaurantInspectionsChart extends Component<
       .attr(
         'stroke',
         (d: any) =>
-          d[d.length - 1].Score >= 90
+          d[d.length - 1].score >= 90
             ? 'green'
-            : d[d.length - 1].Score >= 80 ? 'goldenrod' : 'red',
+            : d[d.length - 1].score >= 80 ? 'goldenrod' : 'red',
       )
       .attr('stroke-width', 2)
       .attr('fill', 'none')
