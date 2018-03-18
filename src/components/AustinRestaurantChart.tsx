@@ -1,18 +1,37 @@
 import React, {Component} from 'react'
 import * as d3 from 'd3'
+import styled from 'styled-components'
 
 import responsivefy from 'utils/responsivefy'
 import {AustinRestaurantInspectionsData} from '../models'
+
+const AustinRestaurantChartContainer = styled.div`
+  margin: 14px;
+
+  .axis {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+  .domain,
+  .tick {
+    stroke-width: 2;
+
+    line,
+    text {
+      stroke: darkslategray;
+    }
+  }
+`
 
 interface AustinRestaurantInspectionsChartProps {
   data: AustinRestaurantInspectionsData[]
 }
 
 const margin = {
-  top: 50,
-  right: 100,
-  bottom: 40,
-  left: 80,
+  top: 10,
+  right: 4,
+  bottom: 30,
+  left: 46,
 }
 
 const width = 800 - margin.left - margin.right
@@ -68,7 +87,7 @@ export class AustinRestaurantInspectionsChart extends Component<
     this.xAxis = this.svg
       .append('g')
       .attr('transform', `translate(0, ${height})`)
-      .attr('class', 'x-axis')
+      .attr('class', 'axis')
       .call(d3.axisBottom(this.xScale))
 
     const yScale = d3
@@ -76,11 +95,11 @@ export class AustinRestaurantInspectionsChart extends Component<
       .domain([0, 100])
       .range([height, 0])
 
-    const yAxis = d3.axisLeft(yScale)
+    const yAxis = d3.axisLeft(yScale).tickSize(10)
 
     this.svg
       .append('g')
-      .attr('class', 'y-axis')
+      .attr('class', 'axis')
       .call(yAxis)
 
     this.line = d3
@@ -105,6 +124,7 @@ export class AustinRestaurantInspectionsChart extends Component<
       d3
         .axisBottom(this.xScale)
         .ticks(10)
+        .tickSize(10)
         .tickFormat(d3.timeFormat('%m/%y')),
     )
 
@@ -121,14 +141,19 @@ export class AustinRestaurantInspectionsChart extends Component<
         'stroke',
         (d: any) =>
           d[d.length - 1].score >= 90
-            ? 'green'
-            : d[d.length - 1].score >= 80 ? 'goldenrod' : 'red',
+            ? 'seagreen'
+            : d[d.length - 1].score >= 80 ? 'goldenrod' : 'tomato',
       )
-      .attr('stroke-width', 2)
+      .attr('stroke-width', 3)
       .attr('fill', 'none')
   }
 
   render() {
-    return <div ref={(el) => (this.container = el)} />
+    return (
+      <AustinRestaurantChartContainer
+        className="AustinRestaurantChart"
+        innerRef={(el) => (this.container = el)}
+      />
+    )
   }
 }
