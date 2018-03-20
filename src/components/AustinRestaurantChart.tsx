@@ -2,11 +2,18 @@ import React, {Component} from 'react'
 import * as d3 from 'd3'
 import styled from 'styled-components'
 
-import responsivefy from 'utils/responsivefy'
+// import responsivefy from 'utils/responsivefy'
 import {AustinRestaurantInspectionsData} from '../models'
 
-const AustinRestaurantChartContainer = styled.div`
+const Outer = styled.div`
+  display: flex;
+  justify-content: center;
   margin: 14px;
+`
+
+const AustinRestaurantChartContainer = styled.div`
+  flex-basis: 600px;
+  padding-bottom: 75%;
 
   .axis {
     font-size: 16px;
@@ -68,9 +75,9 @@ export class AustinRestaurantInspectionsChart extends Component<
     this.svg = d3
       .select(this.container)
       .append('svg')
-      .attr('height', height + margin.top + margin.bottom)
-      .attr('width', width + margin.left + margin.right)
-      .call(responsivefy)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .attr('viewBox', `0 0 800 600`)
+
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
@@ -150,10 +157,12 @@ export class AustinRestaurantInspectionsChart extends Component<
 
   render() {
     return (
-      <AustinRestaurantChartContainer
-        className="AustinRestaurantChart"
-        innerRef={(el) => (this.container = el)}
-      />
+      <Outer>
+        <AustinRestaurantChartContainer
+          className="AustinRestaurantChart"
+          innerRef={(el) => (this.container = el)}
+        />
+      </Outer>
     )
   }
 }

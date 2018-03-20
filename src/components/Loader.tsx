@@ -1,3 +1,8 @@
 import React from 'react'
+import styled from 'styled-components'
 
-export const Loader = () => <h1>Loading...</h1>
+const StyledLoader = styled.h4`
+  text-align: center;
+`
+
+export const Loader = () => <StyledLoader>Loading...</StyledLoader>

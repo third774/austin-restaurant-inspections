@@ -9,26 +9,24 @@ import api from './api'
 import {AustinRestaurantInspectionsData} from './models'
 
 const AppContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  font-size: 18px;
+`
+
+const Header = styled.h1`
   text-align: center;
 `
 
-const GraphContainer = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-`
-
-const SubHeader = styled.h4`
-  position: fixed;
-  width: 100%;
-  bottom: 0;
+const Footer = styled.footer`
+  margin-top: auto;
+  margin-bottom: 6px;
+  font-size: 12px;
   text-align: center;
-  margin: 32px;
 `
 
 interface AppState {
@@ -55,21 +53,19 @@ class App extends React.Component<{}, AppState> {
     const {data, dataPending} = this.state
     return (
       <AppContainer className="App">
-        <h1>Austin Restaurant Inspection Scores</h1>
+        <Header>Austin Restaurant Inspection Scores</Header>
         <Search onChange={this.handleSelection} />
         {dataPending ? (
           <Loader />
         ) : data ? (
-          <GraphContainer>
-            <AustinRestaurantInspectionsChart data={data} />
-          </GraphContainer>
+          <AustinRestaurantInspectionsChart data={data} />
         ) : null}
-        <SubHeader>
+        <Footer>
           Data from{' '}
           <a href="https://data.austintexas.gov/resource/nguv-n54k">
             data.austintexas.gov
           </a>
-        </SubHeader>
+        </Footer>
       </AppContainer>
     )
   }
